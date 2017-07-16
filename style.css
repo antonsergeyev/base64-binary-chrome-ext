@@ -1,0 +1,58 @@
+html {
+    margin: 0;
+    padding: 0;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+body {
+    margin: 5px;
+}
+
+#container {
+    margin: 3px;
+    min-width: 400px;
+}
+
+.has-error textarea {
+    border-color: #f00;
+}
+
+.actions-container {
+    margin-bottom: 5px;
+}
+
+.link {
+    text-decoration: none;
+    border-bottom: 1px dashed;    
+}
+
+textarea {
+    display: block;
+    width: 100%;
+    height: 80px;
+    font-family: monospace;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+#out {
+    margin-top: 10px;
+}
+
+[data-current-action="decode"] .link[data-action="decode"], 
+[data-current-action="encode"] .link[data-action="encode"],
+[data-current-mode="hex"] .link[data-mode="hex"], 
+[data-current-mode="dec"] .link[data-mode="dec"] {
+    opacity: .6;
+    pointer-events: none;
+    border-bottom: none;
+}
+
+.decode-modes-container {
+    margin-top: 3px;
+    text-align: right;
+}
+
+[data-current-action="encode"] .decode-modes-container {
+    display: none;
+}
