@@ -2,8 +2,12 @@ let container = document.getElementById('container');
 let inTextarea = document.getElementById('in');
 let outTextarea = document.getElementById('out');
 
-// Converts base64 string to a space-separated string of bytes in dec or hex, depending on `mode`
-function base64ToByteString(str, mode) {
+// Converts base64 string to a either space-separated string of bytes, or to text, depending on `mode`
+function base64ToString(str, mode) {
+    if (mode === 'text') {
+        return window.atob(str);
+    }
+
     const binaryStr = window.atob(str);
     const len = binaryStr.length;
     let bytes = new Uint8Array(len);
@@ -23,17 +27,29 @@ function base64ToByteString(str, mode) {
     return result.join(' ');
 }
 
-// Converts space-separated string of bytes to base64
-function byteStringToBase64(str) {
+// Converts either ASCII string or space-separated string of bytes, depending on `mode`, to base64
+function stringToBase64(str, mode) {
     if (!str) {
         return '';
     }
 
-    let bytes = str.split(' ').map(b => {
-        const byte = parseInt(b);
+    if (mode === 'text') {
+        const result = window.btoa(str);
+        
+        if (result.length < 1) {
+            throw new Errow('Cannot decode this to ASCII string. Try decimal or hex.');
+        }
+
+        return result;
+    }
+
+    const bytes = str.split(' ').map(part => {
+        const byte = parseInt(part);
 
         if (isNaN(byte)) {
-            throw new Error(`Input string contains invalid characters: "${b}". Use space-separated bytes in decimal or hex form.`);
+            throw new Error(
+                `Input string contains invalid characters: "${part}". Use space-separated bytes in decimal or hex form.`
+            );
         }
 
         return byte;
@@ -45,13 +61,13 @@ function byteStringToBase64(str) {
 // Performs encoding or decoding of user input
 function processInput() {
     let result;
-    let value = inTextarea.value.trim();
+    const value = inTextarea.value.trim();
 
     try {
-        if (container.getAttribute('data-current-action') === 'decode') {
-            result = base64ToByteString(value, container.getAttribute('data-current-mode'));
+        if (getAction() === 'decode') {
+            result = base64ToString(value, getMode());
         } else {
-            result = byteStringToBase64(value);
+            result = stringToBase64(value, getMode());
         }
 
         container.classList.remove('has-error');
@@ -63,11 +79,23 @@ function processInput() {
     outTextarea.value = result;
 }
 
+// Returns current decoding mode - dec, hex, or text
+function getMode() {
+    return container.getAttribute('data-current-mode');
+}
+
+// Sets decoding mode - dec, hex, or text
 function setMode(mode) {
     container.setAttribute('data-current-mode', mode);
     processInput();
 }
 
+// Returns current action - decode or encode
+function getAction() {
+    return container.getAttribute('data-current-action');
+}
+
+// Sets action - decode or encode
 function setAction(action) {
     container.setAttribute('data-current-action', action);
 
@@ -77,12 +105,14 @@ function setAction(action) {
         inPlaceholder = 'in: base64 string';
         outPlaceholder = 'out: decoded bytes';
     } else {
-        inPlaceholder = 'in: space-separated bytes, decimal or hex';
+        inPlaceholder = 'in: space-separated bytes, or just an ASCII string';
         outPlaceholder = 'out: base64 string';
     }
 
     inTextarea.setAttribute('placeholder', inPlaceholder);
+    inTextarea.setAttribute('title', inPlaceholder);
     outTextarea.setAttribute('placeholder', outPlaceholder);
+    outTextarea.setAttribute('title', outPlaceholder);
 
     processInput();
 }

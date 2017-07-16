@@ -3,7 +3,7 @@
   "version": "0.1",
   "manifest_version": 2,
   "author": "Anton Sergeyev",
-  "description": "Decodes base64 string to array of bytes and vice versa. Suitable for decoding binary data that cannot be represented as ASCII string.",
+  "description": "Decodes base64 string to and from array of bytes or ASCII string. Suitable for working with binary data that cannot be represented as ASCII string.",
   "homepage_url": "https://github.com/xapon/base64-binary-chrome-ext",
   "icons": {
     "128": "icons/icon128.png",
